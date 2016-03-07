@@ -6,6 +6,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import BankTeller.event.block.SignChange;
 import BankTeller.event.player.SignClick;
 
 public class BankTeller extends JavaPlugin {
@@ -42,5 +43,6 @@ public class BankTeller extends JavaPlugin {
     	PluginManager pm = getServer().getPluginManager();
     	
     	pm.registerEvents(new SignClick(), this);
+    	pm.registerEvents(new SignChange(), this);
 	}
 }

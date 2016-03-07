@@ -1,11 +1,11 @@
 package BankTeller.event.player;
 
-import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class SignClick implements Listener {
@@ -21,6 +21,10 @@ public class SignClick implements Listener {
 			return;
 		}
 		
+		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+			return;
+		}
+		
 		Block block = event.getClickedBlock();
 		
 		//checks if the state of the block is a instance of sign
@@ -32,12 +36,11 @@ public class SignClick implements Listener {
 		Player player = event.getPlayer();
 		
 		//checks if first line of sign is [bankteller]
-		if(!(sign.getLine(0).equalsIgnoreCase("[bankteller]"))) {
+		if(!(sign.getLine(0).equalsIgnoreCase("§6[bankteller]"))) {
 			return;
 		}
 		
 		event.setCancelled(true);
-		sign.setLine(0, ChatColor.GOLD + "[BankTeller]");
 		player.sendMessage("You clicked a BankTeller!");
 	}
 }
