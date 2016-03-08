@@ -1,5 +1,6 @@
 package BankTeller.event.player;
 
+import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -8,7 +9,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
+
 public class SignClick implements Listener {
+	
+	public static Economy econ = BankTeller.BankTeller.econ;
+	public static Permission perms = BankTeller.BankTeller.perms;
+	public static Chat chat = BankTeller.BankTeller.chat;
+	
 	@EventHandler
 	public void onSignClick(PlayerInteractEvent event) {
 		//checks if event was started by player
@@ -21,6 +31,7 @@ public class SignClick implements Listener {
 			return;
 		}
 		
+		//checks for right click
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return;
 		}
@@ -40,7 +51,12 @@ public class SignClick implements Listener {
 			return;
 		}
 		
-		event.setCancelled(true);
-		player.sendMessage("You clicked a BankTeller!");
+		int balance = (int) econ.getBalance(player);
+		
+		//Check if this is the "open right click"
+		if(sign.getLine(2).equalsIgnoreCase("§aopen")) {
+			player.sendMessage(ChatColor.GOLD + "[BankTeller]" + ChatColor.GREEN + " Bank Account: " + balance);
+		}
+		
 	}
 }

@@ -12,6 +12,7 @@ public class SignChange implements Listener {
 		//Checks if a sign was made with [bankteller] on it
 		if (event.getLine(0).equalsIgnoreCase("[bankteller]")) {
 			event.setLine(0, "§6[BankTeller]");
+			event.setLine(2, "§aOpen");
 		}
 	}
 }
