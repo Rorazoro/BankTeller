@@ -7,9 +7,9 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import BankTeller.commands.BankTellerAdmin;
 import BankTeller.event.block.SignChange;
 import BankTeller.event.player.SignClick;
-
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -36,7 +36,7 @@ public class BankTeller extends JavaPlugin {
             return;
         }
         setupVaultPermissions();
-        setupVaultChat();
+        //setupVaultChat();
     	
     	//****Register commands, events, config, and permissions here****
     	registerEvents();
@@ -70,7 +70,7 @@ public class BankTeller extends JavaPlugin {
 	
 	//Used to register commands
 	private void registerCommands() {
-		
+		getCommand("btadmin").setExecutor(new BankTellerAdmin());
 	}
 	
 	//Used to register permissions
@@ -88,7 +88,7 @@ public class BankTeller extends JavaPlugin {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
         }
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);;
         if (rsp == null) {
             return false;
         }
