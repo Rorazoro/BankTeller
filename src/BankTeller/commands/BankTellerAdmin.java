@@ -21,30 +21,34 @@ public class BankTellerAdmin implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		
-		if (command.getName().equalsIgnoreCase("btadmin") && args.length == 2) {
-			
-			double amount = Double.parseDouble(args[0]);
-			Player target = Bukkit.getPlayer(args[1]);
-			OfflinePlayer targetoff;
-			
-			//checks if player is online, offline, or even exists on the server
-			if (target == null || !target.isOnline()) {
-				targetoff = Bukkit.getOfflinePlayer(args[1]);
-				if (!targetoff.hasPlayedBefore()) {
-					sender.sendMessage("Player doesn't exist on this server!");
-					return false;
+		if (command.getName().equalsIgnoreCase("btadmin") && args.length == 3) {
+			if (args[0].equalsIgnoreCase("add")) {
+				double amount = Double.parseDouble(args[1]);
+				Player target = Bukkit.getPlayer(args[2]);
+				OfflinePlayer targetoff;
+				
+				//checks if player is online, offline, or even exists on the server
+				if (target == null || !target.isOnline()) {
+					targetoff = Bukkit.getOfflinePlayer(args[1]);
+					if (!targetoff.hasPlayedBefore()) {
+						sender.sendMessage("Player doesn't exist on this server!");
+						return false;
+					}
+					add(sender, amount, targetoff);
+				} else {
+					add(sender, amount, target);
 				}
-				add(sender, amount, targetoff);
-			} else {
-				add(sender, amount, target);
+				
+				return true;
 			}
-			
-			return true;
-			
-		} else {
+		}
+		
+		else {
 			sender.sendMessage("Invalid Command");
 			return false;
 		}
+		
+		return false;
 	}
 	
 	public void add(CommandSender sender, double amount, OfflinePlayer targetoff) {
