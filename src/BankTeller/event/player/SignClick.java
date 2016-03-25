@@ -26,6 +26,7 @@ public class SignClick implements Listener {
 	public static Permission perms = BankTeller.BankTeller.perms;
 	public static Chat chat = BankTeller.BankTeller.chat;
 	
+	HashMap<String, Long> SignCache = new HashMap<String, Long>();
 	HashMap<String, Long> ServiceCache = new HashMap<String, Long>();
 	HashMap<String, Long> TransferCache = new HashMap<String, Long>();
 	HashMap<String, Long> TransferAmountCache = new HashMap<String, Long>();
@@ -84,6 +85,7 @@ public class SignClick implements Listener {
 			
 			player.sendMessage(ChatColor.YELLOW + "              DEPOSIT   " + ChatColor.RED + "   WITHDRAW   " + ChatColor.BLUE + "   TRANSFER\n \n");
 			
+			SignCache.put(player.getName(), System.currentTimeMillis());
 			ServiceCache.put(player.getName(), System.currentTimeMillis());
 		}
 		
@@ -91,36 +93,64 @@ public class SignClick implements Listener {
 	
 	//handles player input after click on bankteller sign
 	@EventHandler
-	public void ServiceInput(AsyncPlayerChatEvent event) {
+	public void SignInput(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
 		String message = event.getMessage().toLowerCase();
 		
-		if (ServiceCache.get(player.getName()) != null) {
-			if (message.contentEquals("d") || message.contentEquals("deposit")) {
-				player.sendMessage("Please enter the amount you would like to deposit:");
-				event.setCancelled(true);
-				DepositCache.put(player.getName(), System.currentTimeMillis());
-			} else if (message.contentEquals("w") || message.contentEquals("withdraw")) {
-				player.sendMessage("Please enter the amount you would like to withdraw:");
-				WithdrawCache.put(player.getName(), System.currentTimeMillis());
-			} else if (message.contentEquals("t") || message.contentEquals("transfer")) {
-				player.sendMessage("Please enter the of the player you are transfering to:");
-				TransferCache.put(player.getName(), System.currentTimeMillis());
-			} else {
-				player.sendMessage("Invalid Input. Try again");
+		if (SignCache.containsKey(player.getName())) {
+			
+			if (ServiceCache.containsKey(player.getName())) {
+				ServiceInput(player, message);
 			}
-			ServiceCache.remove(player.getName());
+			
+			else if (DepositCache.containsKey(player.getName())) {
+				DepositInput(player, message);
+			}
+			
+			else if (WithdrawCache.containsKey(player.getName())) {
+				WithdrawInput(player, message);
+			}
+			
+			else {
+				player.sendMessage("Error! Player not in any cache!");
+			}
 			event.setCancelled(true);
 		}
 		return;
 	}
 	
-	@EventHandler
-	public void DepositInput(AsyncPlayerChatEvent event) {
-		Player player = event.getPlayer();
-		String message = event.getMessage();
+	public void ServiceInput (Player player, String message) {
 		
-		if (DepositCache.get(player.getName()) != null) {
+		if (ServiceCache.containsKey(player.getName())) {
+			if (message.contentEquals("d") || message.contentEquals("deposit")) {
+				player.sendMessage("Please enter the amount you would like to deposit:");
+				DepositCache.put(player.getName(), System.currentTimeMillis());
+				player.sendMessage("Deposit fired");
+				
+			} else if (message.contentEquals("w") || message.contentEquals("withdraw")) {
+				player.sendMessage("Please enter the amount you would like to withdraw:");
+				WithdrawCache.put(player.getName(), System.currentTimeMillis());
+				player.sendMessage("Withdraw fired");
+				
+			} else if (message.contentEquals("t") || message.contentEquals("transfer")) {
+				player.sendMessage("Please enter the of the player you are transfering to:");
+				TransferCache.put(player.getName(), System.currentTimeMillis());
+				player.sendMessage("Transfer fired");
+				
+			} else {
+				player.sendMessage("Invalid Input. Try again");
+				player.sendMessage("Invalid Input fired");
+			}
+			ServiceCache.remove(player.getName());
+		}
+	}
+	
+	//Handles player input for depositing
+	public void DepositInput(Player player, String message) {
+		
+		player.sendMessage("DepositInput Started");
+		
+		if (DepositCache.containsKey(player.getName())) {
 			if (message.matches("\\d+")) {
 				
 				int Inv = countInv(player, 371) + (countInv(player, 266) * 9) + (countInv(player, 41) * 81);
@@ -137,15 +167,11 @@ public class SignClick implements Listener {
 			}
 			DepositCache.remove(player.getName());
 		}
-		event.setCancelled(true);
 	}
 	
-	@EventHandler
-	public void WithdrawInput(AsyncPlayerChatEvent event) {
-		Player player = event.getPlayer();
-		String message = event.getMessage();
+	public void WithdrawInput(Player player, String message) {
 		
-		if (WithdrawCache.get(player.getName()) != null) {
+		if (WithdrawCache.containsKey(player.getName())) {
 			if (message.matches("\\d+")) {
 				
 				int Inv = countInv(player, 371) + (countInv(player, 266) * 9) + (countInv(player, 41) * 81);
@@ -162,11 +188,9 @@ public class SignClick implements Listener {
 			}
 			WithdrawCache.remove(player.getName());
 		}
-		event.setCancelled(true);
 	}
 	
-	@EventHandler
-	public void TransferInput(AsyncPlayerChatEvent event) {
+	public void TransferInput() {
 		
 	}
 
@@ -204,6 +228,13 @@ public class SignClick implements Listener {
 		
 		PlayerInventory Inv = player.getInventory();
 		InvAmount = InvAmount - amount;
+		
+		int items[] = {41, 266, 371};
+		int itemamounts[] = {0, 0, 0};
+		
+		for (int i = 0; i < 3; i++) {
+			itemamounts[i] = countInv(player, items[i]);
+		}
 		
 		int newInv[] = convertToItems(InvAmount);
 		
@@ -254,10 +285,6 @@ public class SignClick implements Listener {
 		else {
 			player.sendMessage("An error has occured: " + teller.errorMessage);
 		}
-	}
-	
-	public static void withdraw() {
-		
 	}
 	
 	public static void transfer() {
