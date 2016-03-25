@@ -256,6 +256,10 @@ public class SignClick implements Listener {
 		}
 	}
 	
+	public static void withdraw() {
+		
+	}
+	
 	public static void transfer() {
 		
 	}
